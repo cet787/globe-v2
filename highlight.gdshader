@@ -4,15 +4,12 @@ uniform bool highlighted = false;
 
 void vertex() {
 }
-
 void fragment() {
-	if (highlighted) {
-		EMISSION = vec3(5.0, 0.0, 0.0);
-		ALBEDO = vec3(1.0, 0.0, 0.0);
-	} else {
-		EMISSION = vec3(0.0, 0.0, 0.0);
-		ALBEDO = vec3(1.0, 1.0, 1.0);
-	}
+	if (!highlighted) discard;
+	
+	ALBEDO = vec3(1.0, 0.0, 0.0);
+	EMISSION = vec3(8.0, 0.0, 0.0);
+	ALPHA = 0.9;
 }
 
 //void light() {

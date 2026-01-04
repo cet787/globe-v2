@@ -1,0 +1,41 @@
+[gd_resource type="ShaderMaterial" load_steps=7 format=3 uid="uid://dr2n61sg7a6pa"]
+
+[ext_resource type="Shader" uid="uid://c347wlnhhjyvk" path="res://grass.gdshader" id="1_pkqhw"]
+
+[sub_resource type="Gradient" id="Gradient_nf6bo"]
+colors = PackedColorArray(0, 0.4987496, 0.04396549, 1, 0.36336225, 0.18865848, 1.2032687e-07, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_p3eg5"]
+noise_type = 2
+frequency = 0.18
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_lyvhj"]
+noise = SubResource("FastNoiseLite_p3eg5")
+color_ramp = SubResource("Gradient_nf6bo")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_e8hba"]
+noise_type = 2
+frequency = 0.18
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dkep1"]
+noise = SubResource("FastNoiseLite_e8hba")
+as_normal_map = true
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_pkqhw")
+shader_parameter/albedo = Color(1, 1, 1, 1)
+shader_parameter/texture_albedo = SubResource("NoiseTexture2D_lyvhj")
+shader_parameter/albedo_texture_size = Vector2i(512, 512)
+shader_parameter/point_size = 0.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_normal = SubResource("NoiseTexture2D_dkep1")
+shader_parameter/normal_scale = 0.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/highlight_strength = 0.0
