@@ -1,0 +1,11 @@
+63f7b34db8d8cdea90c76aacccf841ec
+::res://::1767525398
+camera.gd::GDScript::270641976989741917::1767524953::0::1::::<>Camera3D<><>0<>0<><>::
+cell.gd::GDScript::450474083993593035::1767525376::0::1::::Cell<>MeshInstance3D<><>0<>0<><>::
+globe.glb::PackedScene::8098480794588252930::1767525352::1767525355::1::::<><><>0<>0<>b08b40701626157998b7e35e1d8bb01d<>res://.godot/imported/globe.glb-e51fddc07adb535cdc907ae3d09b140d.scn::
+globe.tscn::PackedScene::2576399658497604714::1767523892::0::1::::<><><>0<>0<><>::uid://dnm72btx6t1k5::::res://globe.glb<>uid://eq6mvdpby3vh::::res://highlight.gdshader<>uid://gohiifi0gfyh::::res://cell.gd
+highlight.gdshader::Shader::315690183228315441::1767522179::0::1::::<><><>0<>0<><>::
+icon.svg::CompressedTexture2D::4160645923441420446::1767522179::1767522279::1::::<><><>0<>0<>61997c1dd62b4d6aa1942fabdd334713<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
+root.gd::GDScript::1856440978822112106::1767524041::0::1::::<>Node3D<><>0<>0<><>::
+root.tscn::PackedScene::5549790507754835680::1767522179::0::1::::<><><>0<>0<><>::uid://bcya6qn5avebq::::res://globe.tscn<>uid://1pjkuky7eh6q::::res://root.gd<>uid://d4do0q36r3hh::::res://camera.gd
+set_scripts.gd::GDScript::7858716482486117155::1767523893::0::1::::<>EditorScript<><>0<>1<><>::

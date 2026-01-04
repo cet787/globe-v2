@@ -1,11 +1,7 @@
 extends Node3D
 
+const cell_script = preload("res://cell.gd")
 
 func _ready():
-	var children = $globe.get_children()
-	
-	for child: MeshInstance3D in children:
-		if not child.material_overlay:
-			continue
+	pass
 			
-		child.material_overlay = child.material_overlay.duplicate()

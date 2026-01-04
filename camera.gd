@@ -1,6 +1,6 @@
 extends Camera3D
 
-var last_object: Node3D
+var last_object: Cell
 
 func raycast_from_mouse():
 	var mouse_pos = get_viewport().get_mouse_position()
@@ -21,25 +21,30 @@ func raycast_from_mouse():
 			return
 			
 		if last_object and result.collider != last_object:
-			highlight_object(last_object, false)
-			highlight_object(result.collider, true)
-			last_object = result.collider
+			var new_object = get_object_from_result(result.collider)
+			if new_object is not Cell:
+				return
+	
+			last_object.clear_highlight()
+			new_object.highlight()
+			last_object = new_object
 		
 		if not last_object:
-			highlight_object(result.collider, true)
-			last_object = result.collider
+			var new_object = get_object_from_result(result.collider)
+			if new_object is not Cell:
+				return
+
+			new_object.highlight()
+			last_object = new_object
 	
 	#if the mouse is not hovering over a tile
 	if not result and last_object:
-			highlight_object(last_object, false)
+			last_object.clear_highlight()
 			last_object = null
 
-func highlight_object(collider: Node3D, should_highlight: bool = true):
-	var mesh: MeshInstance3D = collider.get_parent()
-	var mat: ShaderMaterial = mesh.material_overlay
-	mat.set_shader_parameter("highlighted", should_highlight)
-	
+func get_object_from_result(collider):
+	return collider.get_parent()
 		
-func _process(delta):
+func _process(_delta):
 	raycast_from_mouse()
 	
