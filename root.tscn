@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://clcmiec5xxh73"]
+
+[ext_resource type="PackedScene" uid="uid://bcya6qn5avebq" path="res://globe.tscn" id="1_pyidc"]
+[ext_resource type="Script" uid="uid://1pjkuky7eh6q" path="res://root.gd" id="1_vvh5c"]
+[ext_resource type="Script" uid="uid://d4do0q36r3hh" path="res://camera.gd" id="2_vvh5c"]
+
+[node name="Root" type="Node3D"]
+script = ExtResource("1_vvh5c")
+
+[node name="globe" parent="." instance=ExtResource("1_pyidc")]
+
+[node name="Light" type="DirectionalLight3D" parent="."]
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.9880536)
+script = ExtResource("2_vvh5c")
+
+[node name="Raycast" type="RayCast3D" parent="Camera"]
