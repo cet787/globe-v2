@@ -10,7 +10,13 @@ var cell_type: CellType = CellType.WATER
 var active_position: Vector3
 var inactive_position: Vector3
 
-var occupied_by: Player
+var occupied_by: Player:
+	set(new_player):
+		occupied_by = new_player
+		allocate_resources(new_player)
+		
+	get():
+		return occupied_by
 
 @onready var root: Root = get_tree().current_scene
 
@@ -49,7 +55,19 @@ func clear_highlight():
 	material_override.set_shader_parameter("highlight_strength", 0.0)
 	active_state = ActiveState.INACTIVE
 	
-func get_materials_allocation():
-	return {}
+func allocate_resources(player: Player):
+	var player_weakref = weakref(player)
+	
+	while true:
+		await get_tree().create_timer(5.0).timeout
+		if player_weakref.get_ref() != occupied_by:
+			print("WeakRef does not equal occupied_by")
+			break
+		if not occupied_by:
+			print("Occupied by null")
+			break
+		occupied_by.collect_resources({
+			"oil": 1
+		})
 	
 	

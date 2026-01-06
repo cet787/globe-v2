@@ -24,7 +24,7 @@ var last_gesture: Vector2
 @export var zoom_sensitivity: float = 0.1
 
 func _ready() -> void:
-	get_tree().current_scene.get_node("OccupyCellButton").pressed.connect(on_occupy_cell_pressed)
+	get_tree().current_scene.get_node("Panel/VBox/OccupyCellButton").pressed.connect(on_occupy_cell_pressed)
 
 func raycast_from_mouse():
 	var mouse_pos = get_viewport().get_mouse_position()
@@ -85,6 +85,8 @@ func _highlight_neighbors():
 	
 	
 func _unhandled_input(event: InputEvent) -> void:
+	
+	# If mouse is pressed occupy cell
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			selected_object = last_object

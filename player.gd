@@ -17,3 +17,18 @@ func occupy_cell(cell: Cell):
 	
 func get_available_cells():
 	pass
+	
+func collect_resources(resource_dict: Dictionary[String, int]) -> void:
+	for key in resource_dict.keys():
+		if not key in resources.keys():
+			push_warning(
+				"{resource_key} not found in player({player_name}) resource dictionary".format({
+					"resource_key":key,
+					"player_name": player_name
+			}))
+			continue
+		resources[key] += resource_dict[key]
+		print(resources)
+	get_tree().current_scene.get_node("Panel/VBox/OilResourceLabel").text = "Oil: {oil_num}".format({
+		"oil_num": resources["oil"]
+	})
