@@ -1,12 +1,30 @@
 extends Camera3D
 
 var last_object: Cell
+var selected_object: Cell:
+	set(new_object):
+		if selected_object:
+			selected_object.material_override.set_shader_parameter("selected_highlight_strength", 0.0)
+		selected_object = new_object
+		
+		if new_object:
+			new_object.material_override.set_shader_parameter("selected_highlight_strength", 1.0)
+		
+	get():
+		return selected_object
+
 var dragging: bool = false
+var last_gesture: Vector2
+@onready var root: Root = get_tree().current_scene
 
 @onready var camera_anchor: Node3D = get_tree().current_scene.get_node("CameraAnchor")
 @onready var camera_marker: Node3D = camera_anchor.get_node("CameraMarker")
 
 @export var mouse_sensitivity: float = 0.1
+@export var zoom_sensitivity: float = 0.1
+
+func _ready() -> void:
+	get_tree().current_scene.get_node("OccupyCellButton").pressed.connect(on_occupy_cell_pressed)
 
 func raycast_from_mouse():
 	var mouse_pos = get_viewport().get_mouse_position()
@@ -53,7 +71,26 @@ func _process(_delta):
 	look_at(Vector3.ZERO)
 	raycast_from_mouse()
 	
-func _input(event):
+func _highlight_neighbors():
+	var objs = root.get_cells(last_object)
+	objs.sort_custom(func(a, b) -> bool: 
+		return last_object.global_position.distance_squared_to(a.global_position) < last_object.global_position.distance_squared_to(b.global_position))
+	
+	var closest_six = objs.slice(0, 6)
+	
+	for cell in closest_six:
+		cell.material_override.set_shader_parameter("region_highlight_strength", 0.8)
+		
+	
+	
+	
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			selected_object = last_object
+		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+			selected_object = null
+		
 	if event is InputEventMouseButton:
 		if event.button_index == MouseButton.MOUSE_BUTTON_RIGHT:
 			dragging = event.pressed
@@ -68,7 +105,31 @@ func _input(event):
 			deg_to_rad(80)
 		)
 		
+	if event is InputEventMagnifyGesture:
+		fov -= (event.factor - 1) * zoom_sensitivity
+		
+	if event is InputEventPanGesture:
+		camera_anchor.rotation.y += event.delta.x * mouse_sensitivity
+		camera_anchor.rotation.x += event.delta.y * mouse_sensitivity
+	
+		
 func get_object_from_result(collider):
 	return collider.get_parent()
+	
+func on_occupy_cell_pressed():
+	if selected_object and not selected_object.occupied_by:
+		var player = get_tree().current_scene.get_node("Player")
+		player.occupy_cell(selected_object)
+		selected_object.occupied_by = player
+		selected_object.material_override.set_shader_parameter("region_highlight_color", player.color)
+		selected_object.material_override.set_shader_parameter("region_highlight_strength", 1.0)
+		
+	elif selected_object.occupied_by:
+		print("Selected object is already occupied by {player}".format({
+			"player": selected_object.occupied_by.player_name
+		}))
+		
+	else:
+		print("No object to select")
 	
 	

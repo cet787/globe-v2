@@ -18,35 +18,78 @@ uniform float metallic : hint_range(0.0, 1.0, 0.01);
 
 uniform sampler2D texture_normal : hint_roughness_normal, filter_linear_mipmap, repeat_enable;
 uniform float normal_scale : hint_range(-16.0, 16.0);
+varying vec3 uv1_triplanar_pos;
+varying vec3 uv2_triplanar_pos;
+
+uniform float uv1_blend_sharpness : hint_range(0.0, 150.0, 0.001);
+varying vec3 uv1_power_normal;
+uniform float uv2_blend_sharpness : hint_range(0.0, 150.0, 0.001);
+varying vec3 uv2_power_normal;
 
 uniform vec3 uv1_scale;
 uniform vec3 uv1_offset;
 uniform vec3 uv2_scale;
 uniform vec3 uv2_offset;
 
-uniform float highlight_strength = 0.0;
+uniform float highlight_strength;
+uniform float region_highlight_strength;
+uniform vec3 region_highlight_color = vec3(1.0, 0.0, 1.0);
+uniform float selected_highlight_strength;
 
 void vertex() {
-	UV = UV * uv1_scale.xy + uv1_offset.xy;
+	vec3 normal = MODEL_NORMAL_MATRIX * NORMAL;
+
+	TANGENT = vec3(0.0, 0.0, -1.0) * abs(normal.x);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(normal.y);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(normal.z);
+	TANGENT = inverse(MODEL_NORMAL_MATRIX) * normalize(TANGENT);
+
+	BINORMAL = vec3(0.0, 1.0, 0.0) * abs(normal.x);
+	BINORMAL += vec3(0.0, 0.0, -1.0) * abs(normal.y);
+	BINORMAL += vec3(0.0, 1.0, 0.0) * abs(normal.z);
+	BINORMAL = inverse(MODEL_NORMAL_MATRIX) * normalize(BINORMAL);
+
+	// UV1 Triplanar: Enabled (with World Triplanar)
+	uv1_power_normal = pow(abs(normal), vec3(uv1_blend_sharpness));
+	uv1_triplanar_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz * uv1_scale + uv1_offset;
+	uv1_power_normal /= dot(uv1_power_normal, vec3(1.0));
+	uv1_triplanar_pos *= vec3(1.0, -1.0, 1.0);
+
+	// UV2 Triplanar: Enabled (with World Triplanar)
+	uv2_power_normal = pow(abs(mat3(MODEL_MATRIX) * NORMAL), vec3(uv2_blend_sharpness));
+	uv2_triplanar_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz * uv2_scale + uv2_offset;
+	uv2_power_normal /= dot(uv2_power_normal, vec3(1.0));
+	uv2_triplanar_pos *= vec3(1.0, -1.0, 1.0);
+}
+
+vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos) {
+	vec4 samp = vec4(0.0);
+	samp += texture(p_sampler, p_triplanar_pos.xy) * p_weights.z;
+	samp += texture(p_sampler, p_triplanar_pos.xz) * p_weights.y;
+	samp += texture(p_sampler, p_triplanar_pos.zy * vec2(-1.0, 1.0)) * p_weights.x;
+	return samp;
 }
 
 void fragment() {
-	vec2 base_uv = UV;
-
-	vec4 albedo_tex = texture(texture_albedo, base_uv);
+	vec4 albedo_tex = triplanar_texture(texture_albedo, uv1_power_normal, uv1_triplanar_pos);
 	ALBEDO = albedo.rgb * albedo_tex.rgb;
 
-	float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
+	float metallic_tex = dot(triplanar_texture(texture_metallic, uv1_power_normal, uv1_triplanar_pos), metallic_texture_channel);
 	METALLIC = metallic_tex * metallic;
 	SPECULAR = specular;
 
 	vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
-	float roughness_tex = dot(texture(texture_roughness, base_uv), roughness_texture_channel);
+	float roughness_tex = dot(triplanar_texture(texture_roughness, uv1_power_normal, uv1_triplanar_pos), roughness_texture_channel);
 	ROUGHNESS = roughness_tex * roughness;
 
 	// Normal Map: Enabled
-	NORMAL_MAP = texture(texture_normal, base_uv).rgb;
+	NORMAL_MAP = triplanar_texture(texture_normal, uv1_power_normal, uv1_triplanar_pos).rgb;
 	NORMAL_MAP_DEPTH = normal_scale;
-
+	
+	ALBEDO = mix(ALBEDO, vec3(0.0, 0.0, 1.0), selected_highlight_strength);
+	if (selected_highlight_strength == 0.0) {
+		ALBEDO = mix(ALBEDO, region_highlight_color, region_highlight_strength);
+	}
 	ALBEDO = mix(ALBEDO, vec3(1.0, 0.0, 0.0), highlight_strength);
+	
 }

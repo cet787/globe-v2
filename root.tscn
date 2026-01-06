@@ -1,18 +1,25 @@
-[gd_scene load_steps=7 format=3 uid="uid://clcmiec5xxh73"]
+[gd_scene load_steps=9 format=3 uid="uid://clcmiec5xxh73"]
 
 [ext_resource type="PackedScene" uid="uid://bcya6qn5avebq" path="res://globe.tscn" id="1_pyidc"]
 [ext_resource type="Script" uid="uid://1pjkuky7eh6q" path="res://root.gd" id="1_vvh5c"]
 [ext_resource type="Script" uid="uid://d4do0q36r3hh" path="res://camera.gd" id="2_vvh5c"]
+[ext_resource type="Script" uid="uid://c01o0ym06dtld" path="res://player.gd" id="4_28aoi"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_vvh5c"]
-frequency = 0.04
+frequency = 1.0
 metadata/_preview_in_3d_space_ = true
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vvh5c"]
+
 [sub_resource type="Sky" id="Sky_vvh5c"]
+sky_material = SubResource("ShaderMaterial_vvh5c")
 
 [sub_resource type="Environment" id="Environment_28aoi"]
 background_mode = 2
 sky = SubResource("Sky_vvh5c")
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.25
 
 [node name="Root" type="Node3D"]
 script = ExtResource("1_vvh5c")
@@ -30,6 +37,7 @@ light_energy = 3.144
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.9880538)
 script = ExtResource("2_vvh5c")
 mouse_sensitivity = 0.05
+zoom_sensitivity = 0.4
 
 [node name="Raycast" type="RayCast3D" parent="Camera"]
 
@@ -38,3 +46,14 @@ transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0,
 
 [node name="CameraMarker" type="Marker3D" parent="CameraAnchor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+
+[node name="OccupyCellButton" type="Button" parent="."]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Occupy Cell"
+
+[node name="Player" type="Node" parent="."]
+script = ExtResource("4_28aoi")
+color = Color(0.7236038, 0.24781305, 0.696575, 1)
+player_name = "Connor"
+metadata/_custom_type_script = "uid://c01o0ym06dtld"

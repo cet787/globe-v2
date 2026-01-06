@@ -5,3 +5,9 @@ res://water_material.tres
 res://grass.gdshader
 res://grass_material.tres
 res://highlight.gdshader
+res://dirt.gdshader
+res://cell.gd
+res://globe.tscn
+res://dirt_material.tres
+res://root.gd
+res://player.gd

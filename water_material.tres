@@ -12,7 +12,7 @@ as_normal_map = true
 [resource]
 render_priority = 0
 shader = ExtResource("1_pmio7")
-shader_parameter/albedo = Color(0, 0.4862745, 0.74509805, 0.47058824)
+shader_parameter/albedo = Color(0, 0.4862745, 0.74509805, 1)
 shader_parameter/albedo_texture_size = Vector2i(0, 0)
 shader_parameter/point_size = 1.0
 shader_parameter/roughness = 1.0
