@@ -24,7 +24,7 @@ var last_gesture: Vector2
 @export var zoom_sensitivity: float = 0.1
 
 func _ready() -> void:
-	get_tree().current_scene.get_node("Panel/VBox/OccupyCellButton").pressed.connect(on_occupy_cell_pressed)
+	get_tree().current_scene.get_node("CellPanel/VBox/OccupyCellButton").pressed.connect(on_occupy_cell_pressed)
 
 func raycast_from_mouse():
 	var mouse_pos = get_viewport().get_mouse_position()
@@ -81,17 +81,25 @@ func _highlight_neighbors():
 	for cell in closest_six:
 		cell.material_override.set_shader_parameter("region_highlight_strength", 0.8)
 		
-	
-	
-	
 func _unhandled_input(event: InputEvent) -> void:
 	
 	# If mouse is pressed occupy cell
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			selected_object = last_object
+			var mouse_pos = get_viewport().get_mouse_position()
+			var cell_panel = get_tree().current_scene.get_node("CellPanel")
+			var cell_panel_label = cell_panel.get_node("VBox/CellPanelLabel")
+			cell_panel_label.text = _get_cell_panel_text()
+			if selected_object.occupied_by and selected_object.occupied_by != self:
+				cell_panel.get_node("VBox/AttackButton").visible = true
+			cell_panel.position = mouse_pos
+			cell_panel.visible = true
+			
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			selected_object = null
+			get_tree().current_scene.get_node("CellPanel").visible = false
+			get_tree().current_scene.get_node("CellPanel/VBox/AttackButton").visible = false
 		
 	if event is InputEventMouseButton:
 		if event.button_index == MouseButton.MOUSE_BUTTON_RIGHT:
@@ -119,12 +127,16 @@ func get_object_from_result(collider):
 	return collider.get_parent()
 	
 func on_occupy_cell_pressed():
-	if selected_object and not selected_object.occupied_by:
-		var player = get_tree().current_scene.get_node("Player")
+	var player: Player = get_tree().current_scene.get_node("Player")
+	var available_cells = player.get_available_cells()
+	
+	if selected_object in available_cells:
 		player.occupy_cell(selected_object)
 		selected_object.occupied_by = player
 		selected_object.material_override.set_shader_parameter("region_highlight_color", player.color)
-		selected_object.material_override.set_shader_parameter("region_highlight_strength", 1.0)
+		selected_object.material_override.set_shader_parameter("region_highlight_strength", 0.5)
+		selected_object = null
+		get_tree().current_scene.get_node("CellPanel").visible = false
 		
 	elif selected_object.occupied_by:
 		print("Selected object is already occupied by {player}".format({
@@ -135,3 +147,34 @@ func on_occupy_cell_pressed():
 		print("No object to select")
 	
 	
+func _get_cell_panel_text() -> String:
+	if not selected_object.occupied_by:
+		return """{title}
+		Type: {type}
+		Resources: {resource_list}
+		""".format({
+			"title": "Undiscovered" if not selected_object.occupied_by else "Discovered",
+			"type": Cell.CellType.keys()[selected_object.cell_type].to_lower().capitalize(),
+			"resource_list": selected_object.available_resources
+		})
+	
+	elif selected_object.occupied_by and selected_object.occupied_by == self:
+		return """Occupied by you
+		Type: {type}
+		Resources: {resource_list}
+		""".format({
+			"type": Cell.CellType.keys()[selected_object.cell_type].to_lower().capitalize(),
+			"resource_list": selected_object.available_resource
+		})
+	
+	elif selected_object.occupied_by and selected_object.occupied_by != self:
+		return """Occupied by {opponent}
+		Type: {type}
+		Resources: {resource_list}
+		""".format({
+			"opponent": selected_object.occupied_by.player_name,
+			"type": Cell.CellType.keys()[selected_object.cell_type].to_lower().capitalize(),
+			"resource_list": selected_object.available_resources
+		})
+	else:
+		return "Cell state unknown"

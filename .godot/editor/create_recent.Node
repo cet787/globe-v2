@@ -1,8 +1,10 @@
-VBoxContainer
-Panel
-Label
-Player
+MarginContainer
 Button
+ComputerControlledPlayer
+Label
+Panel
+VBoxContainer
+Player
 OmniLight3D
 MeshInstance3D
 Marker3D

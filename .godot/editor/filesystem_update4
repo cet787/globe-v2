@@ -6,6 +6,9 @@ res://grass_material.tres
 res://dirt.gdshader
 res://dirt_material.tres
 res://highlight.gdshader
+res://sky.gdshader
 res://camera.gd
-res://cell.gd
 res://player.gd
+res://cell.gd
+res://message_panel.gd
+res://computer_controlled_player.gd
