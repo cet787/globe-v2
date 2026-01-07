@@ -1,14 +1,4 @@
-res://root.tscn
-res://water.gdshader
-res://water_material.tres
-res://grass.gdshader
-res://grass_material.tres
-res://dirt.gdshader
-res://dirt_material.tres
-res://highlight.gdshader
-res://sky.gdshader
+res://computer_controlled_player.gd
 res://camera.gd
 res://player.gd
 res://cell.gd
-res://message_panel.gd
-res://computer_controlled_player.gd

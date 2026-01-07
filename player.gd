@@ -10,6 +10,7 @@ var resources: Dictionary[String, int] = {
 }
 
 signal cell_just_occupied
+signal resources_changed
 
 func _ready():
 	resources["resource"] = 1
@@ -23,6 +24,7 @@ func occupy_cell(cell: Cell):
 
 ## Returns an array of cells that border the players existing cells excluding already occupied cells and water
 func get_available_cells():
+	
 	var all_cells = get_tree().current_scene.get_cells()
 	var available_cells: Array[Cell]
 	
@@ -66,6 +68,7 @@ func collect_resources(resource_dict: Dictionary[String, int]) -> void:
 			continue
 		resources[key] += resource_dict[key]
 	_update_resource_panel()
+	resources_changed.emit()
 
 func _update_resource_panel() -> void:
 	get_tree().current_scene.get_node("ResourcePanel/VBox/OilResourceLabel").text = "Resources: {resource}".format({

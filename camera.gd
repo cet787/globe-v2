@@ -93,6 +93,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			cell_panel_label.text = _get_cell_panel_text()
 			if selected_object.occupied_by and selected_object.occupied_by != self:
 				cell_panel.get_node("VBox/AttackButton").visible = true
+			else:
+				cell_panel.get_node("VBox/AttackButton").visible = false
 			cell_panel.position = mouse_pos
 			cell_panel.visible = true
 			

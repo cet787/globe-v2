@@ -4,7 +4,7 @@ class_name ComputerControlledPlayer
 func _ready():
 	_set_initial_cell()
 	
-func _occupy_cell(cell: Cell):
+func occupy_cell(cell: Cell):
 	occupied_cells.append(cell)
 	cell.occupied_by = self
 	resources["resource"] -= 1
@@ -26,16 +26,31 @@ func _set_initial_cell():
 	available_cells = all_cells.slice(7, 18)
 		
 	# Remove the cells that are already occupied
-	available_cells.filter(func(a: Cell) -> bool:
+	available_cells = available_cells.filter(func(a: Cell) -> bool:
 		return true if not a.occupied_by else false)
 	
 	# Remove the ceel sthat are water type
-	available_cells.filter(func(a: Cell) -> bool:
+	available_cells = available_cells.filter(func(a: Cell) -> bool:
 		return true if a.cell_type != Cell.CellType.WATER else false)
-	
-	print(available_cells)
+		
 	if available_cells.size() > 0:
-		_occupy_cell(available_cells.pick_random())
+		occupy_cell(available_cells.pick_random())
 		
 	else:
 		push_error("NPC could not load first cell")
+	
+	_start_control_loop()
+	
+func _start_control_loop():
+	
+	# Basic control loop that has the game logic
+	while true:
+		
+		# Make strategy changes when the resources available changes
+		await resources_changed
+		var start_time = Time.get_ticks_usec()
+		var available_cells = get_available_cells()
+		if available_cells.size() > 0:
+			occupy_cell(available_cells.pick_random())
+		
+		print("CCP took {time} usec".format({"time": Time.get_ticks_usec() - start_time}))
