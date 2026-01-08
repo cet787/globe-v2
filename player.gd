@@ -13,7 +13,8 @@ signal cell_just_occupied
 signal resources_changed
 
 func _ready():
-	resources["resource"] = 1
+	await get_tree().process_frame
+	resources["resource"] = 3
 	_start_resource_panel_updating()
 
 func occupy_cell(cell: Cell):

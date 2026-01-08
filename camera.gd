@@ -16,6 +16,7 @@ var selected_object: Cell:
 var dragging: bool = false
 var last_gesture: Vector2
 @onready var root: Root = get_tree().current_scene
+@onready var message_panel: MessagePanel = get_tree().current_scene.get_node("MessagePanel")
 
 @onready var camera_anchor: Node3D = get_tree().current_scene.get_node("CameraAnchor")
 @onready var camera_marker: Node3D = camera_anchor.get_node("CameraMarker")
@@ -89,6 +90,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			selected_object = last_object
+			if not selected_object:
+				return
 			var mouse_pos = get_viewport().get_mouse_position()
 			var cell_panel = get_tree().current_scene.get_node("CellPanel")
 			var cell_panel_label = cell_panel.get_node("VBox/CellPanelLabel")
@@ -152,6 +155,9 @@ func on_occupy_cell_pressed():
 	
 	
 func _get_cell_panel_text() -> String:
+	if not selected_object:
+		return ""
+		
 	if not selected_object.occupied_by:
 		return """{title}
 		Type: {type}
@@ -193,16 +199,37 @@ func _on_highlight_neighbors_pressed():
 		print("An object must be selected to highlight neighbor")
 
 func _on_attack_button_presssed():
+	print("Started attack function")
 	var attacker: Player = get_tree().current_scene.get_node("Player")
 	var defender: Player = selected_object.occupied_by
 	
 	# Calculate the odds that each will win
+	if attacker.resources["resource"] < 1:
+		message_panel.display_message("You musr have at least 1 resource to attack opponent.")
+		print("You must have at least 1 resource to attack opponent.")
+		return
 	
 	var total_resources = attacker.resources["resource"] + defender.resources["resource"]
+	var attacker_coefficient = attacker.resources["resource"] / total_resources
 	
-	var attacker_coeffficient: float = 0.5 if attacker.resources["resource"] == 0 else attacker.resources["resource"] / total_resources
-	
-	if randf() < attacker_coeffficient:
+	if randf() < attacker_coefficient:
+		var is_border: bool = false
+		for cell: Cell in selected_object.neighbors:
+			if cell.occupied_by == attacker:
+				is_border = true
+				
+		if not is_border:
+			message_panel.display_message("You must border your oponents region to attack.")
+			print("You must border your oponents region to attack.")
+			return
+		
 		defender.erase_cell(selected_object)
 		attacker.occupy_cell(selected_object)
+		selected_object.occupied_by = attacker
+		message_panel.display_message("You won the battle")
+		print("You won the battle")
+	else:
+		message_panel.display_message("You lost the battle")
+		print("You lost the battle")
+		
 	

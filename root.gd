@@ -6,6 +6,7 @@ const cell_script = preload("res://cell.gd")
 var cells: Array[Cell]
 
 func _ready():
+	await get_tree().process_frame
 	var children = $globe.get_children()
 	for child in children:
 		if child is Cell:

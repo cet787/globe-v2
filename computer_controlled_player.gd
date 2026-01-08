@@ -2,6 +2,7 @@ extends Player
 class_name ComputerControlledPlayer
 
 func _ready():
+	await get_tree().process_frame
 	_set_initial_cell()
 	resources["resource"] = 1
 	

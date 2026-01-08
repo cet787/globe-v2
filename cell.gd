@@ -25,6 +25,7 @@ var occupied_by: Player:
 @onready var root: Root = get_tree().current_scene
 
 func _ready() -> void:
+	await get_tree().process_frame
 	# Set position for when selected
 	inactive_position = global_position
 	active_position = inactive_position * 1.01
