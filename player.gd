@@ -14,7 +14,7 @@ signal resources_changed
 
 func _ready():
 	resources["resource"] = 1
-	_update_resource_panel()
+	_start_resource_panel_updating()
 
 func occupy_cell(cell: Cell):
 	occupied_cells.append(cell)
@@ -22,33 +22,30 @@ func occupy_cell(cell: Cell):
 	_update_resource_panel()
 	cell_just_occupied.emit()
 
+func erase_cell(cell: Cell):
+	occupied_cells.erase(cell)
+
 ## Returns an array of cells that border the players existing cells excluding already occupied cells and water
 func get_available_cells():
 	
-	var all_cells = get_tree().current_scene.get_cells()
-	var available_cells: Array[Cell]
+	var available_cells: Array[Cell] = []
 	
 	# If you have no cells active then all cells are available
 	if occupied_cells.size() == 0:
-		available_cells = all_cells.duplicate()
+		available_cells = get_tree().current_scene.get_cells()
 	
-	# If you have already placed cells then use only neighboring cellls
 	else:
 		for cell in occupied_cells:
-			
-			all_cells.sort_custom(func(a, b) -> bool:
-				return cell.global_position.distance_squared_to(a.global_position) < cell.global_position.distance_squared_to(b.global_position))
-			var six_closest = all_cells.slice(0, 6)
-			for close_cell in six_closest:
-				if not available_cells.has(close_cell):
-					available_cells.append(close_cell)
+			available_cells += cell.neighbors
+	
+	remove_duplicates(available_cells)
 		
 	# Remove the cells that are already occupied
-	available_cells.filter(func(a: Cell) -> bool:
+	available_cells = available_cells.filter(func(a: Cell) -> bool:
 		return true if not a.occupied_by else false)
 	
 	# Remove the ceel sthat are water type
-	available_cells.filter(func(a: Cell) -> bool:
+	available_cells = available_cells.filter(func(a: Cell) -> bool:
 		return true if a.cell_type != Cell.CellType.WATER else false)
 	
 	if resources["resource"] == 0:
@@ -67,10 +64,22 @@ func collect_resources(resource_dict: Dictionary[String, int]) -> void:
 			}))
 			continue
 		resources[key] += resource_dict[key]
-	_update_resource_panel()
 	resources_changed.emit()
 
 func _update_resource_panel() -> void:
 	get_tree().current_scene.get_node("ResourcePanel/VBox/OilResourceLabel").text = "Resources: {resource}".format({
 		"resource": resources["resource"]
 	})
+
+func remove_duplicates(arr: Array) -> Array:
+	var seen := {}
+	for element in arr:
+		seen[element] = true
+	return seen.keys()
+
+
+func _start_resource_panel_updating():
+	_update_resource_panel()
+	while true:
+		await resources_changed
+		_update_resource_panel()

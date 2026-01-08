@@ -7,6 +7,7 @@ enum CellType { WATER, TREES, DIRT }
 var active_state: ActiveState = ActiveState.INACTIVE
 var cell_type: CellType = CellType.WATER
 var available_resources: String
+var neighbors: Array[Cell]
 
 var active_position: Vector3
 var inactive_position: Vector3
@@ -75,5 +76,17 @@ func allocate_resources(player: Player):
 		occupied_by.collect_resources({
 			"resource": 1
 		})
+
+func set_neighbors(all_cells:Array[Cell]):
+	all_cells.sort_custom(func(a: Cell, b: Cell) -> bool:
+		return a.global_position.distance_squared_to(global_position) < b.global_position.distance_squared_to(global_position))
+	
+	neighbors = all_cells.slice(0, 6)
+	
+func highlight_cell(timeout: float = 1.0):
+	material_overlay.set_shader_parameter("highlight_strength", 1.0)
+	await get_tree().create_timer(timeout).timeout
+	material_overlay.set_shader_parameter("highlight_strength", 0.0)
+	
 	
 	

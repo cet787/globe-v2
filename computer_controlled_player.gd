@@ -3,8 +3,11 @@ class_name ComputerControlledPlayer
 
 func _ready():
 	_set_initial_cell()
+	resources["resource"] = 1
 	
 func occupy_cell(cell: Cell):
+	if resources["resource"] < 1:
+		print("CCP requires one resource to occupy a new cell")
 	occupied_cells.append(cell)
 	cell.occupied_by = self
 	resources["resource"] -= 1
@@ -45,12 +48,11 @@ func _start_control_loop():
 	
 	# Basic control loop that has the game logic
 	while true:
-		
 		# Make strategy changes when the resources available changes
-		await resources_changed
-		var start_time = Time.get_ticks_usec()
+		await get_tree().create_timer(1.0).timeout
+		if resources["resource"] > 0:
+			continue
 		var available_cells = get_available_cells()
 		if available_cells.size() > 0:
 			occupy_cell(available_cells.pick_random())
-		
-		print("CCP took {time} usec".format({"time": Time.get_ticks_usec() - start_time}))
+			print(resources["resource"])

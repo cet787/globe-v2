@@ -11,6 +11,9 @@ func _ready():
 		if child is Cell:
 			cells.append(child)
 			
+	for child in children:
+		child.set_neighbors(get_cells(child))
+			
 func get_cells(exclude: Cell = null) -> Array[Cell]:
 	if not exclude:
 		return cells.duplicate()

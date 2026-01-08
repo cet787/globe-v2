@@ -25,7 +25,9 @@ var last_gesture: Vector2
 
 func _ready() -> void:
 	get_tree().current_scene.get_node("CellPanel/VBox/OccupyCellButton").pressed.connect(on_occupy_cell_pressed)
-
+	get_tree().current_scene.get_node("CellPanel/VBox/AttackButton").pressed.connect(_on_attack_button_presssed)
+	get_tree().current_scene.get_node("ResourcePanel/VBox/HighlightNeighbors").pressed.connect(_on_highlight_neighbors_pressed)
+	
 func raycast_from_mouse():
 	var mouse_pos = get_viewport().get_mouse_position()
 	
@@ -180,3 +182,27 @@ func _get_cell_panel_text() -> String:
 		})
 	else:
 		return "Cell state unknown"
+		
+func _on_highlight_neighbors_pressed():
+	if selected_object:
+		for neighbor in selected_object.neighbors:
+			print(neighbor)
+			neighbor.material_override.set_shader_parameter("selected_highlight_strength", 1.0)
+	
+	else:
+		print("An object must be selected to highlight neighbor")
+
+func _on_attack_button_presssed():
+	var attacker: Player = get_tree().current_scene.get_node("Player")
+	var defender: Player = selected_object.occupied_by
+	
+	# Calculate the odds that each will win
+	
+	var total_resources = attacker.resources["resource"] + defender.resources["resource"]
+	
+	var attacker_coeffficient: float = 0.5 if attacker.resources["resource"] == 0 else attacker.resources["resource"] / total_resources
+	
+	if randf() < attacker_coeffficient:
+		defender.erase_cell(selected_object)
+		attacker.occupy_cell(selected_object)
+	
