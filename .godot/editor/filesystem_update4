@@ -7,4 +7,5 @@ res://dirt.gdshader
 res://dirt_material.tres
 res://sky.gdshader
 res://highlight.gdshader
+res://camera.gd
 res://tank.gd

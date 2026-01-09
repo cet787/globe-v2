@@ -27,6 +27,7 @@ var last_gesture: Vector2
 func _ready() -> void:
 	get_tree().current_scene.get_node("CellPanel/VBox/OccupyCellButton").pressed.connect(on_occupy_cell_pressed)
 	get_tree().current_scene.get_node("CellPanel/VBox/AttackButton").pressed.connect(_on_attack_button_presssed)
+	get_tree().current_scene.get_node("CellPanel/VBox/AddTankButton").pressed.connect(_on_move_tank_pressed)
 	get_tree().current_scene.get_node("ResourcePanel/VBox/HighlightNeighbors").pressed.connect(_on_highlight_neighbors_pressed)
 	
 func raycast_from_mouse():
@@ -89,6 +90,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	# If mouse is pressed occupy cell
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			var tank = get_tree().current_scene.get_node("tank")
 			selected_object = last_object
 			if not selected_object:
 				return
@@ -100,6 +102,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				cell_panel.get_node("VBox/AttackButton").visible = true
 			else:
 				cell_panel.get_node("VBox/AttackButton").visible = false
+				
+			if tank:
+				cell_panel.get_node("VBox/AddTankButton").visible = true
+			else:
+				cell_panel.get_node("VBox/AddTankButton").visible = false
+				
 			cell_panel.position = mouse_pos
 			cell_panel.visible = true
 			
@@ -230,4 +238,6 @@ func _on_attack_button_presssed():
 		message_panel.display_message("You lost the battle")
 		print("You lost the battle")
 		
-	
+
+func _on_move_tank_pressed():
+	get_tree().current_scene.get_node("tank").seek_point = selected_object.global_position
