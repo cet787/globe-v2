@@ -140,8 +140,6 @@ func on_occupy_cell_pressed():
 	if selected_object in available_cells:
 		player.occupy_cell(selected_object)
 		selected_object.occupied_by = player
-		selected_object.material_override.set_shader_parameter("region_highlight_color", player.color)
-		selected_object.material_override.set_shader_parameter("region_highlight_strength", 0.5)
 		selected_object = null
 		get_tree().current_scene.get_node("CellPanel").visible = false
 		

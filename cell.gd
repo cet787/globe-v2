@@ -17,6 +17,8 @@ var inactive_position: Vector3
 var occupied_by: Player:
 	set(new_player):
 		occupied_by = new_player
+		material_override.set_shader_parameter("region_highlight_color", occupied_by.color)
+		material_override.set_shader_parameter("region_highlight_strength", 0.5)
 		allocate_resources(new_player)
 		
 	get():
@@ -78,11 +80,26 @@ func allocate_resources(player: Player):
 			"resource": 1
 		})
 
-func set_neighbors(all_cells:Array[Cell]):
-	all_cells.sort_custom(func(a: Cell, b: Cell) -> bool:
-		return a.global_position.distance_squared_to(global_position) < b.global_position.distance_squared_to(global_position))
-	
-	neighbors = all_cells.slice(0, 6)
+func set_neighbors(all_cells: Array[Cell]):
+	var best := []
+
+	for cell in all_cells:
+		if cell == self:
+			continue
+
+		var d := cell.global_position.distance_squared_to(global_position)
+
+		if best.size() < 6:
+			best.append([d, cell])
+			if best.size() == 6:
+				best.sort_custom(func(a, b): return a[0] < b[0])
+		elif d < best[5][0]:
+			best[5] = [d, cell]
+			best.sort_custom(func(a, b): return a[0] < b[0])
+
+	neighbors.clear()
+	for entry in best:
+		neighbors.append(entry[1])
 	
 func highlight_cell(timeout: float = 1.0):
 	material_overlay.set_shader_parameter("highlight_strength", 1.0)
