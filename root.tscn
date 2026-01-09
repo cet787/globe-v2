@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://clcmiec5xxh73"]
+[gd_scene load_steps=14 format=3 uid="uid://clcmiec5xxh73"]
 
 [ext_resource type="PackedScene" uid="uid://bcya6qn5avebq" path="res://globe.tscn" id="1_pyidc"]
 [ext_resource type="Script" uid="uid://1pjkuky7eh6q" path="res://root.gd" id="1_vvh5c"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://beswy0b5bsysb" path="res://message_panel.gd" id="5_l8v81"]
 [ext_resource type="Script" uid="uid://oqyy78na53sy" path="res://computer_controlled_player.gd" id="7_vyht1"]
 [ext_resource type="PackedScene" uid="uid://ntnhdssu7gil" path="res://tank.glb" id="8_bf3um"]
+[ext_resource type="Script" uid="uid://6k3rwahg02mv" path="res://tank.gd" id="9_huihk"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_vvh5c"]
 frequency = 1.0
@@ -145,4 +146,5 @@ player_name = "Christopher"
 metadata/_custom_type_script = "uid://oqyy78na53sy"
 
 [node name="tank" parent="." instance=ExtResource("8_bf3um")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.100440025, 1.0640486)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.100440025, 0.9968022)
+script = ExtResource("9_huihk")
