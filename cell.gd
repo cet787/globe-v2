@@ -30,7 +30,7 @@ func _ready() -> void:
 	await get_tree().process_frame
 	# Set position for when selected
 	inactive_position = global_position
-	active_position = inactive_position * 1.01
+	active_position = inactive_position # * 1.01
 		
 	# Set terrain type based of the calculated noise
 	var noise_value = root.get_noise_at(global_position)
@@ -41,14 +41,14 @@ func _ready() -> void:
 	elif noise_value >= 0.0 and noise_value < 0.35:
 		material_override = preload("res://grass_material.tres").duplicate()
 		cell_type = CellType.TREES
-		inactive_position *= 1.005
-		active_position *= 1.005
+		#inactive_position *= 1.005
+		#active_position *= 1.005
 		available_resources = "Wood"
 	elif noise_value >= 0.35:
 		material_override = preload("res://dirt_material.tres").duplicate()
 		cell_type = CellType.DIRT
-		inactive_position *= 1.01
-		active_position *= 1.01
+		#inactive_position *= 1.01
+		#active_position *= 1.01
 		available_resources = "Oil, Stone"
 	
 func _process(_delta) -> void:

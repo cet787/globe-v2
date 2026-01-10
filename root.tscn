@@ -150,5 +150,5 @@ player_name = "Christopher"
 metadata/_custom_type_script = "uid://oqyy78na53sy"
 
 [node name="tank" parent="." instance=ExtResource("8_bf3um")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.100440025, 0.9968022)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45667693, 0.9968022)
 script = ExtResource("9_huihk")

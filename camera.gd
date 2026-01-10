@@ -240,4 +240,4 @@ func _on_attack_button_presssed():
 		
 
 func _on_move_tank_pressed():
-	get_tree().current_scene.get_node("tank").seek_point = selected_object.global_position
+	get_tree().current_scene.get_node("tank").seek_cell = selected_object

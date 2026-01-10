@@ -1,16 +1,16 @@
 extends Node3D
 class_name Tank
 
-var seek_point: Vector3
+var seek_cell: Cell
 
 func _ready() -> void:
 	_adjust_basis_to_ground()
 	
 
 func _process(delta):
-	if seek_point:
+	if seek_cell:
 		# Get the direction to the target in global space
-		var direction_to_target = seek_point - global_position
+		var direction_to_target = seek_cell.global_position - global_position
 		
 		# Transform the direction into the object's local space
 		var local_direction = global_transform.basis.inverse() * direction_to_target
@@ -18,17 +18,24 @@ func _process(delta):
 		# Project onto the XZ plane (removing Y component) to get Y-axis rotation only
 		local_direction.y = 0
 		
-		if local_direction.length_squared() > 0.001:  # Avoid normalizing zero vector
-			local_direction = local_direction.normalized()
+		if local_direction.length_squared() < 0.0001:
+			return  # Avoid normalizing zero vector
+		local_direction = local_direction.normalized()
+		
+		# Calculate the angle to rotate around local Y
+		var angle = atan2(local_direction.x, -local_direction.z)
+		
+		# Smoothly interpolate the angle
+		var rotation_amount = angle * delta  # Adjust 5.0 for rotation speed
+		
+		# Rotate the basis around its local Y-axis (which is basis.y)
+		global_transform.basis = global_transform.basis.rotated(global_transform.basis.y, rotation_amount)
+		
+		if abs(angle) < 0.05:
+			global_position = global_position.move_toward(seek_cell.global_position, 0.01)
+			_adjust_basis_to_ground()
 			
-			# Calculate the angle to rotate around local Y
-			var angle = atan2(local_direction.x, local_direction.z)
-			
-			# Smoothly interpolate the angle
-			var rotation_amount = angle * delta  # Adjust 5.0 for rotation speed
-			
-			# Rotate the basis around its local Y-axis (which is basis.y)
-			global_transform.basis = global_transform.basis.rotated(global_transform.basis.y, rotation_amount)
+		
 	
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey:
