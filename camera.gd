@@ -1,14 +1,14 @@
 extends Camera3D
 
-var last_object: Cell
-var selected_object: Cell:
+var last_object
+var selected_object:
 	set(new_object):
 		if selected_object:
-			selected_object.material_override.set_shader_parameter("selected_highlight_strength", 0.0)
+			selected_object.unselect()
 		selected_object = new_object
 		
 		if new_object:
-			new_object.material_override.set_shader_parameter("selected_highlight_strength", 1.0)
+			new_object.select()
 		
 	get():
 		return selected_object
@@ -52,17 +52,16 @@ func raycast_from_mouse():
 			
 		if last_object and result.collider != last_object:
 			var new_object = get_object_from_result(result.collider)
-			if new_object is not Cell:
-				print("not cell")
+			if new_object is not Cell and new_object is not InteractiveVehicle:
 				return
 	
-			last_object.clear_highlight()
+			last_object.unhighlight()
 			new_object.highlight()
 			last_object = new_object
 		
 		if not last_object:
 			var new_object = get_object_from_result(result.collider)
-			if new_object is not Cell:
+			if new_object is not Cell and new_object is not InteractiveVehicle:
 				return
 
 			new_object.highlight()
@@ -70,8 +69,8 @@ func raycast_from_mouse():
 	
 	#if the mouse is not hovering over a tile
 	if not result and last_object:
-			last_object.clear_highlight()
-			last_object = null
+		last_object.unhighlight()
+		last_object = null
 
 func _process(_delta):
 	global_position = camera_marker.global_position
@@ -101,7 +100,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			var cell_panel = get_tree().current_scene.get_node("CellPanel")
 			var cell_panel_label = cell_panel.get_node("VBox/CellPanelLabel")
 			cell_panel_label.text = _get_cell_panel_text()
-			if selected_object.occupied_by and selected_object.occupied_by != self:
+			if selected_object is Cell and selected_object.occupied_by and selected_object.occupied_by != self:
 				cell_panel.get_node("VBox/AttackButton").visible = true
 			else:
 				cell_panel.get_node("VBox/AttackButton").visible = false
@@ -167,37 +166,44 @@ func on_occupy_cell_pressed():
 func _get_cell_panel_text() -> String:
 	if not selected_object:
 		return ""
+	
+	if selected_object is Cell:
+		if not selected_object.occupied_by:
+			return """{title}
+			Type: {type}
+			Resources: {resource_list}
+			""".format({
+				"title": "Undiscovered" if not selected_object.occupied_by else "Discovered",
+				"type": Cell.CellType.keys()[selected_object.cell_type].to_lower().capitalize(),
+				"resource_list": selected_object.available_resources
+			})
 		
-	if not selected_object.occupied_by:
-		return """{title}
-		Type: {type}
-		Resources: {resource_list}
-		""".format({
-			"title": "Undiscovered" if not selected_object.occupied_by else "Discovered",
-			"type": Cell.CellType.keys()[selected_object.cell_type].to_lower().capitalize(),
-			"resource_list": selected_object.available_resources
-		})
+		elif selected_object.occupied_by and selected_object.occupied_by == self:
+			return """Occupied by you
+			Type: {type}
+			Resources: {resource_list}
+			""".format({
+				"type": Cell.CellType.keys()[selected_object.cell_type].to_lower().capitalize(),
+				"resource_list": selected_object.available_resource
+			})
+		
+		elif selected_object.occupied_by and selected_object.occupied_by != self:
+			return """Occupied by {opponent}
+			Type: {type}
+			Resources: {resource_list}
+			""".format({
+				"opponent": selected_object.occupied_by.player_name,
+				"type": Cell.CellType.keys()[selected_object.cell_type].to_lower().capitalize(),
+				"resource_list": selected_object.available_resources
+			})
+		else:
+			return "Cell state unknown"
 	
-	elif selected_object.occupied_by and selected_object.occupied_by == self:
-		return """Occupied by you
-		Type: {type}
-		Resources: {resource_list}
-		""".format({
-			"type": Cell.CellType.keys()[selected_object.cell_type].to_lower().capitalize(),
-			"resource_list": selected_object.available_resource
-		})
+	elif selected_object is InteractiveVehicle:
+		return "Vehicle"
 	
-	elif selected_object.occupied_by and selected_object.occupied_by != self:
-		return """Occupied by {opponent}
-		Type: {type}
-		Resources: {resource_list}
-		""".format({
-			"opponent": selected_object.occupied_by.player_name,
-			"type": Cell.CellType.keys()[selected_object.cell_type].to_lower().capitalize(),
-			"resource_list": selected_object.available_resources
-		})
 	else:
-		return "Cell state unknown"
+		return "Unkown/incompatible type"
 
 #TODO should be depricated onw at least once before completely removing	
 func _on_highlight_neighbors_pressed():

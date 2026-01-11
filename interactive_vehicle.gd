@@ -1,6 +1,3 @@
 @abstract
-extends Node
+extends Highlightable
 class_name InteractiveVehicle
-
-func highlight(timeout: float = INF):
-	pass

@@ -1,4 +1,4 @@
-extends Node3D
+extends InteractiveVehicle
 class_name Tank
 
 var seek_cell: Cell
@@ -84,3 +84,18 @@ func _adjust_basis_to_ground():
 		up,
 		-forward
 	)
+
+func highlight(timeout: float = INF):
+	$Tank.material_overlay.set_shader_parameter("highlight_strength", 1.0)
+	if timeout != INF:
+		await get_tree().create_timer(timeout).timeout
+		$Tank.material_overlay.set_shader_parameter("highlight_strength", 0.0)
+
+func unhighlight():
+	$Tank.material_overlay.set_shader_parameter("highlight_strength", 0.0)
+
+func select():
+	$Tank.material_overlay.set_shader_parameter("selected_highlight_strength", 1.0)
+
+func unselect():
+	$Tank.material_overlay.set_shader_parameter("selected_highlight_strength", 0.0)

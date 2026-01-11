@@ -66,10 +66,6 @@ func highlight(timeout: float = INF):
 		active_state = ActiveState.INACTIVE
 
 func unhighlight():
-	material_override.set_shader_parameter("highlight", 0.0)
-	active_state = ActiveState.INACTIVE
-	
-func clear_highlight():
 	material_override.set_shader_parameter("highlight_strength", 0.0)
 	active_state = ActiveState.INACTIVE
 	
