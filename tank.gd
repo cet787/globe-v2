@@ -5,9 +5,11 @@ var seek_cell: Cell
 
 func _ready() -> void:
 	_adjust_basis_to_ground()
-	
 
+	
 func _process(delta):
+	# DebugDraw3D.draw_points(PackedVector3Array([global_position]), DebugDraw3D.POINT_TYPE_SPHERE, 0.05)
+
 	if seek_cell:
 		# Get the direction to the target in global space
 		var direction_to_target = seek_cell.global_position - global_position
@@ -53,10 +55,27 @@ func _unhandled_input(event: InputEvent) -> void:
 		_adjust_basis_to_ground()
 				
 func _adjust_basis_to_ground():
-	var up = global_position.normalized()
+	if global_position != Vector3.ZERO:
+		global_position = global_position.normalized()
+		
+	var pos = global_position
+	if pos.length_squared() < 0.0001:
+		return
+
+	# Globe normal
+	var up = pos.normalized()
+
+	# Preserve current forward as much as possible
 	var forward = -global_transform.basis.z
-	
-	forward = (forward - up * forward.dot(up)).normalized()
+
+	# Remove vertical component
+	forward -= up * forward.dot(up)
+
+	if forward.length_squared() < 0.0001:
+		# Fallback forward if degenerate
+		forward = up.cross(Vector3.RIGHT).normalized()
+
+	forward = forward.normalized()
 	var right = up.cross(forward).normalized()
 	forward = right.cross(up).normalized()
 
@@ -64,10 +83,4 @@ func _adjust_basis_to_ground():
 		right,
 		up,
 		-forward
-	)
-
-	global_position = up
-	global_transform.basis.z.rotated(
-		global_transform.basis.z,
-		PI
 	)

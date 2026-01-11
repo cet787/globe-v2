@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://c080q84bgkjex"]
+
+[ext_resource type="PackedScene" uid="uid://ntnhdssu7gil" path="res://tank.glb" id="1_1ealj"]
+[ext_resource type="Script" uid="uid://6k3rwahg02mv" path="res://tank.gd" id="2_a62es"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1ealj"]
+size = Vector3(0.02, 0.02, 0.04)
+
+[node name="tank" instance=ExtResource("1_1ealj")]
+script = ExtResource("2_a62es")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+shape = SubResource("BoxShape3D_1ealj")

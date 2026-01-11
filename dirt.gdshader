@@ -86,9 +86,13 @@ void fragment() {
 	NORMAL_MAP = triplanar_texture(texture_normal, uv1_power_normal, uv1_triplanar_pos).rgb;
 	NORMAL_MAP_DEPTH = normal_scale;
 	
-	ALBEDO = mix(ALBEDO, vec3(0.0, 0.0, 1.0), selected_highlight_strength);
+	if (selected_highlight_strength > 0.0) {
+		ALBEDO = mix(ALBEDO, vec3(0.0, 0.0, 1.0), selected_highlight_strength);	
+	} else if (highlight_strength > 0.0) {
+		ALBEDO = mix(ALBEDO, vec3(1.0, 0.0, 0.0), highlight_strength);
+	}
+	
 	if (selected_highlight_strength == 0.0) {
 		ALBEDO = mix(ALBEDO, region_highlight_color, region_highlight_strength);
 	}
-	ALBEDO = mix(ALBEDO, vec3(1.0, 0.0, 0.0), highlight_strength);
 }

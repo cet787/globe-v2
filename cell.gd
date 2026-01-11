@@ -57,13 +57,27 @@ func _process(_delta) -> void:
 	else:
 		global_position = global_position.lerp(inactive_position, 0.1)
 	
-func highlight():
+func highlight(timeout: float = INF):
 	material_override.set_shader_parameter("highlight_strength", 1.0)
 	active_state = ActiveState.ACTIVE
+	if timeout != INF:
+		await get_tree().create_timer(timeout).timeout
+		material_override.set_shader_parameter("highlight_strength", 0.0)
+		active_state = ActiveState.INACTIVE
+
+func unhighlight():
+	material_override.set_shader_parameter("highlight", 0.0)
+	active_state = ActiveState.INACTIVE
 	
 func clear_highlight():
 	material_override.set_shader_parameter("highlight_strength", 0.0)
 	active_state = ActiveState.INACTIVE
+	
+func select():
+	material_override.set_shader_parameter("selected_highlight_strength", 1.0)
+
+func unselect():
+	material_override.set_shader_parameter("selected_highlight_strength", 0.0)
 	
 func allocate_resources(player: Player):
 	var player_weakref = weakref(player)
@@ -100,11 +114,4 @@ func set_neighbors(all_cells: Array[Cell]):
 	neighbors.clear()
 	for entry in best:
 		neighbors.append(entry[1])
-	
-func highlight_cell(timeout: float = 1.0):
-	material_overlay.set_shader_parameter("highlight_strength", 1.0)
-	await get_tree().create_timer(timeout).timeout
-	material_overlay.set_shader_parameter("highlight_strength", 0.0)
-	
-	
 	

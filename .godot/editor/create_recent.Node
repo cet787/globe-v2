@@ -1,3 +1,5 @@
+StaticBody3D
+CollisionShape3D
 Button
 MarginContainer
 ComputerControlledPlayer
