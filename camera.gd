@@ -99,11 +99,22 @@ func _unhandled_input(event: InputEvent) -> void:
 			var mouse_pos = get_viewport().get_mouse_position()
 			var cell_panel = get_tree().current_scene.get_node("CellPanel")
 			var cell_panel_label = cell_panel.get_node("VBox/CellPanelLabel")
-			cell_panel_label.text = _get_cell_panel_text()
-			if selected_object is Cell and selected_object.occupied_by and selected_object.occupied_by != self:
-				cell_panel.get_node("VBox/AttackButton").visible = true
-			else:
+			cell_panel_label.text = _get_panel_text()
+			
+			if selected_object is Cell:
+				cell_panel.get_node("VBox/AddTankButton").visible = true
+				cell_panel.get_node("VBox/MoveTankButton").visible = true
+				cell_panel.get_node("VBox/OccupyCellButton").visible = true
+				if selected_object is Cell and selected_object.occupied_by and selected_object.occupied_by != self:
+					cell_panel.get_node("VBox/AttackButton").visible = true
+				else:
+					cell_panel.get_node("VBox/AttackButton").visible = false
+			
+			if selected_object is InteractiveVehicle:
+				cell_panel.get_node("VBox/OccupyCellButton").visible = false
 				cell_panel.get_node("VBox/AttackButton").visible = false
+				cell_panel.get_node("VBox/AddTankButton").visible = false
+				cell_panel.get_node("VBox/MoveTankButton").visible = false
 				
 			cell_panel.position = mouse_pos
 			cell_panel.visible = true
@@ -163,7 +174,7 @@ func on_occupy_cell_pressed():
 		print("No object to select")
 	
 	
-func _get_cell_panel_text() -> String:
+func _get_panel_text() -> String:
 	if not selected_object:
 		return ""
 	

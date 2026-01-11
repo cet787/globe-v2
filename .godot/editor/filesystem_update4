@@ -1,16 +1,1 @@
 res://camera.gd
-res://interactive_vehicle.gd
-res://tank.tscn
-res://water.gdshader
-res://water_material.tres
-res://grass.gdshader
-res://grass_material.tres
-res://dirt.gdshader
-res://dirt_material.tres
-res://sky.gdshader
-res://highlight.gdshader
-res://tank.gdshader
-res://tank.gd
-res://cell.gd
-res://highlightable.gd
-res://root.tscn
