@@ -9,9 +9,12 @@ var selected_object:
 		
 		if new_object:
 			new_object.select()
+			selected_object_changed.emit()
 		
 	get():
 		return selected_object
+		
+signal selected_object_changed
 
 var dragging: bool = false
 var last_gesture: Vector2
@@ -30,6 +33,7 @@ func _ready() -> void:
 	get_tree().current_scene.get_node("CellPanel/VBox/AttackButton").pressed.connect(_on_attack_button_presssed)
 	get_tree().current_scene.get_node("CellPanel/VBox/AddTankButton").pressed.connect(_on_add_tank_pressed)
 	get_tree().current_scene.get_node("CellPanel/VBox/MoveTankButton").pressed.connect(_on_move_tank_pressed)
+	get_tree().current_scene.get_node("CellPanel/VBox/AttackTankButton").pressed.connect(_on_attack_tank_pressed)
 	get_tree().current_scene.get_node("ResourcePanel/VBox/HighlightNeighbors").pressed.connect(_on_highlight_neighbors_pressed)
 	
 func raycast_from_mouse():
@@ -105,6 +109,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				cell_panel.get_node("VBox/AddTankButton").visible = true
 				cell_panel.get_node("VBox/MoveTankButton").visible = true
 				cell_panel.get_node("VBox/OccupyCellButton").visible = true
+				cell_panel.get_node("VBox/AttackTankButton").visible = false
 				if selected_object is Cell and selected_object.occupied_by and selected_object.occupied_by != self:
 					cell_panel.get_node("VBox/AttackButton").visible = true
 				else:
@@ -114,7 +119,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				cell_panel.get_node("VBox/OccupyCellButton").visible = false
 				cell_panel.get_node("VBox/AttackButton").visible = false
 				cell_panel.get_node("VBox/AddTankButton").visible = false
-				cell_panel.get_node("VBox/MoveTankButton").visible = false
+				cell_panel.get_node("VBox/MoveTankButton").visible = true
+				cell_panel.get_node("VBox/AttackTankButton").visible = true
 				
 			cell_panel.position = mouse_pos
 			cell_panel.visible = true
@@ -161,7 +167,6 @@ func on_occupy_cell_pressed():
 	
 	if selected_object in available_cells:
 		player.occupy_cell(selected_object)
-		selected_object.occupied_by = player
 		selected_object = null
 		get_tree().current_scene.get_node("CellPanel").visible = false
 		
@@ -169,9 +174,13 @@ func on_occupy_cell_pressed():
 		print("Selected object is already occupied by {player}".format({
 			"player": selected_object.occupied_by.player_name
 		}))
+		message_panel.display_message("Selected object is already occupied by {player}".format({
+			"player": selected_object.occupied_by.player_name
+		}))
 		
 	else:
 		print("No object to select")
+		message_panel.display_message("No object to select")
 	
 	
 func _get_panel_text() -> String:
@@ -211,7 +220,18 @@ func _get_panel_text() -> String:
 			return "Cell state unknown"
 	
 	elif selected_object is InteractiveVehicle:
-		return "Vehicle"
+		if selected_object is Tank:
+			return """Tank
+			Ammo: {ammo}
+			Attack range: {a_range}
+			Move range: {m_range}
+			""".format({
+				"ammo": selected_object.ammo,
+				"a_range": selected_object.max_attack_dist,
+				"m_range": selected_object.max_move_dist
+			})
+		else:
+			return "Unkown/incompatible type"
 	
 	else:
 		return "Unkown/incompatible type"
@@ -220,20 +240,18 @@ func _get_panel_text() -> String:
 func _on_highlight_neighbors_pressed():
 	if selected_object:
 		for neighbor in selected_object.neighbors:
-			print(neighbor)
 			neighbor.highlight_cell()
 	
 	else:
 		print("An object must be selected to highlight neighbor")
 
 func _on_attack_button_presssed():
-	print("Started attack function")
 	var attacker: Player = get_tree().current_scene.get_node("Player")
 	var defender: Player = selected_object.occupied_by
 	
 	# Calculate the odds that each will win
 	if attacker.resources["resource"] < 1:
-		message_panel.display_message("You musr have at least 1 resource to attack opponent.")
+		message_panel.display_message("You must have at least 1 resource to attack opponent.")
 		print("You must have at least 1 resource to attack opponent.")
 		return
 	
@@ -267,11 +285,46 @@ func _on_add_tank_pressed():
 	new_tank.add_to_group("tanks")
 	new_tank.global_position = selected_object.global_position
 	new_tank._adjust_basis_to_ground()
+	new_tank.player = get_tree().current_scene.get_node("Player")
 	
 func _on_move_tank_pressed():
-	var tanks = get_tree().get_nodes_in_group("tanks")
-	
-	for tank in tanks:
-		tank.seek_cell = selected_object
-	
+	if selected_object is Tank:
+		var previous_selected_object: Tank = selected_object
+		await selected_object_changed
+		if selected_object is not Cell:
+			print("You must move to an object of type cell")
+			message_panel.display_message("You must move to an object of type cell")
+			return
+		
+		if selected_object.global_position.distance_to(previous_selected_object.global_position) > previous_selected_object.max_move_dist:
+			print("That cell is farther than the single turn distance limit of 0.125")
+			message_panel.display_message("That cell is farther than the single turn distance limit of 0.125")
+			return
+		
+		previous_selected_object.seek_cell = selected_object
+		
+		
+func _on_attack_tank_pressed():
+	if selected_object is Tank:
+		var previous_tank: Tank = selected_object
+		await selected_object_changed
+		if selected_object is not Tank:
+			print("You must attack an object of type tank")
+			message_panel.display_message("You must attack an object of type tank")
+			return
+		
+		if selected_object.global_position.distance_to(previous_tank.global_position) > previous_tank.max_attack_dist:
+			print("That tank is farther than the maximum attack distance of 1.0")
+			message_panel.display_message("That tank is farther than the maximum attack distance of 1.0")
+			
+		if previous_tank.ammo < 1:
+			print("You must have ammo to attack other tank")
+			message_panel.display_message("You must have ammo to attack other tank")
+			
+		if randf() > previous_tank.accuracy:
+			var object_to_delete = selected_object
+			selected_object = null
+			object_to_delete.explode()
+		
+		previous_tank.ammo -= 1
 	

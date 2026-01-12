@@ -1,1 +1,15 @@
+res://root.tscn
+res://water.gdshader
+res://water_material.tres
+res://grass.gdshader
+res://grass_material.tres
+res://dirt.gdshader
+res://dirt_material.tres
+res://sky.gdshader
+res://tank.gdshader
+res://highlight.gdshader
 res://camera.gd
+res://root.gd
+res://tank.gd
+res://interactive_vehicle.gd
+res://player.gd

@@ -117,6 +117,10 @@ text = "Add Tank"
 layout_mode = 2
 text = "Move Tank"
 
+[node name="AttackTankButton" type="Button" parent="CellPanel/VBox"]
+layout_mode = 2
+text = "Attack Tank"
+
 [node name="MessagePanel" type="Panel" parent="."]
 visible = false
 anchors_preset = -1
@@ -135,6 +139,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_font_sizes/font_size = 36
 horizontal_alignment = 1
 vertical_alignment = 1
 

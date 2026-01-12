@@ -20,6 +20,7 @@ func _ready():
 func occupy_cell(cell: Cell):
 	occupied_cells.append(cell)
 	resources["resource"] -= 1
+	cell.occupied_by = self
 	_update_resource_panel()
 	cell_just_occupied.emit()
 

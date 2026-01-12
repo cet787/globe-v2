@@ -14,7 +14,29 @@ func _ready():
 			
 	for child in children:
 		child.set_neighbors(get_cells(child))
-			
+		
+	#NOTE Measure neighbor distance statistics
+	#var min_dist := INF
+	#var max_dist := 0.0
+	#var sum_dist := 0.0
+	#var count := 0
+#
+	#for child: Cell in $globe.get_children():
+		#for neighbor: Cell in child.neighbors:
+			#var d := child.global_position.distance_to(neighbor.global_position)
+			#min_dist = min(min_dist, d)
+			#max_dist = max(max_dist, d)
+			#sum_dist += d
+			#count += 1
+#
+	#if count > 0:
+		#var avg_dist := sum_dist / count
+		#print("Cell neighbor distances")
+		#print("Max: %f, Min: %f, Avg: %f" % [max_dist, min_dist, avg_dist])
+	#else:
+		#print("No neighbor distances found")
+		
+
 func get_cells(exclude: Cell = null) -> Array[Cell]:
 	if not exclude:
 		return cells.duplicate()
