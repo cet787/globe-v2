@@ -1,0 +1,36 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://d2pust48fyh87"]
+
+[ext_resource type="Shader" uid="uid://bbomgdrbq6pvq" path="res://Globe/water.gdshader" id="1_pmio7"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_pmio7"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_mcwpg"]
+noise = SubResource("FastNoiseLite_pmio7")
+seamless = true
+as_normal_map = true
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_pmio7")
+shader_parameter/albedo = Color(0, 0.4862745, 0.74509805, 1)
+shader_parameter/albedo_texture_size = Vector2i(0, 0)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_roughness = SubResource("NoiseTexture2D_mcwpg")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/texture_refraction = SubResource("NoiseTexture2D_mcwpg")
+shader_parameter/refraction = 0.05
+shader_parameter/refraction_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_normal = SubResource("NoiseTexture2D_mcwpg")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_blend_sharpness = 1.0
+shader_parameter/uv1_scale = Vector3(5, 5, 5)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/highlight_strength = 0.0
+shader_parameter/region_highlight_strength = 0.0
+shader_parameter/region_highlight_color = Vector3(1, 0, 1)
+shader_parameter/selected_highlight_strength = 0.0

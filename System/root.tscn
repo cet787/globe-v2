@@ -1,0 +1,157 @@
+[gd_scene load_steps=13 format=3 uid="uid://clcmiec5xxh73"]
+
+[ext_resource type="PackedScene" uid="uid://bcya6qn5avebq" path="res://Globe/globe.tscn" id="1_pyidc"]
+[ext_resource type="Script" uid="uid://1pjkuky7eh6q" path="res://System/root.gd" id="1_vvh5c"]
+[ext_resource type="Shader" uid="uid://c80bpj7yug6x6" path="res://Globe/sky.gdshader" id="2_jnlp7"]
+[ext_resource type="Script" uid="uid://d4do0q36r3hh" path="res://System/camera.gd" id="2_vvh5c"]
+[ext_resource type="Script" uid="uid://c01o0ym06dtld" path="res://System/player.gd" id="4_28aoi"]
+[ext_resource type="PackedScene" uid="uid://qpmd3ow1ks0n" path="res://System/market.tscn" id="5_bf3um"]
+[ext_resource type="Script" uid="uid://beswy0b5bsysb" path="res://System/message_panel.gd" id="5_l8v81"]
+[ext_resource type="Script" uid="uid://oqyy78na53sy" path="res://System/computer_controlled_player.gd" id="7_vyht1"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_vvh5c"]
+frequency = 1.0
+metadata/_preview_in_3d_space_ = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vvh5c"]
+shader = ExtResource("2_jnlp7")
+shader_parameter/star_density = 250.0
+shader_parameter/star_threshold = 0.985
+shader_parameter/star_min_size = 0.05
+shader_parameter/star_max_size = 0.1
+
+[sub_resource type="Sky" id="Sky_vvh5c"]
+sky_material = SubResource("ShaderMaterial_vvh5c")
+
+[sub_resource type="Environment" id="Environment_28aoi"]
+background_mode = 2
+sky = SubResource("Sky_vvh5c")
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.25
+
+[node name="Root" type="Node3D"]
+script = ExtResource("1_vvh5c")
+terrain_noise = SubResource("FastNoiseLite_vvh5c")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_28aoi")
+
+[node name="globe" parent="." instance=ExtResource("1_pyidc")]
+
+[node name="Light" type="DirectionalLight3D" parent="."]
+light_energy = 3.144
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.9880538)
+script = ExtResource("2_vvh5c")
+zoom_sensitivity = 0.4
+
+[node name="Raycast" type="RayCast3D" parent="Camera"]
+
+[node name="CameraAnchor" type="Node3D" parent="."]
+transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0, 0)
+
+[node name="CameraMarker" type="Marker3D" parent="CameraAnchor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+
+[node name="MessagePanel" type="Panel" parent="."]
+visible = false
+anchors_preset = -1
+anchor_left = 0.25
+anchor_top = 0.75
+anchor_right = 0.75
+anchor_bottom = 0.75
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_l8v81")
+
+[node name="MessageLabel" type="Label" parent="MessagePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResourcePanel" type="Panel" parent="."]
+anchors_preset = -1
+anchor_left = 0.05
+anchor_top = 0.05
+anchor_right = 0.15
+anchor_bottom = 0.25
+offset_right = 40.0
+offset_bottom = 40.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="VBox" type="VBoxContainer" parent="ResourcePanel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="OccupyCellButton" type="Button" parent="ResourcePanel/VBox"]
+layout_mode = 2
+text = "Occupy Cell"
+
+[node name="HighlightNeighbors" type="Button" parent="ResourcePanel/VBox"]
+layout_mode = 2
+text = "Highlight Neighbors"
+
+[node name="OilResourceLabel" type="Label" parent="ResourcePanel/VBox"]
+layout_mode = 2
+text = "Resources: 0"
+
+[node name="CellPanel" type="Panel" parent="."]
+visible = false
+custom_minimum_size = Vector2(150, 250)
+offset_right = 98.0
+offset_bottom = 58.0
+
+[node name="VBox" type="VBoxContainer" parent="CellPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CellPanelLabel" type="Label" parent="CellPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="OccupyFirstCellButton" type="Button" parent="CellPanel/VBox"]
+layout_mode = 2
+text = "Occupy First Region"
+
+[node name="OccupyCellButton" type="Button" parent="CellPanel/VBox"]
+visible = false
+layout_mode = 2
+text = "Occupy Region"
+
+[node name="MarketButton" type="Button" parent="CellPanel/VBox"]
+visible = false
+layout_mode = 2
+text = "Market"
+
+[node name="DrawLineButton" type="Button" parent="CellPanel/VBox"]
+layout_mode = 2
+text = "DrawLine"
+
+[node name="Market" parent="." instance=ExtResource("5_bf3um")]
+visible = false
+
+[node name="Player" type="Node" parent="."]
+script = ExtResource("4_28aoi")
+color = Color(0.7236038, 0.24781305, 0.696575, 1)
+player_name = "Connor"
+metadata/_custom_type_script = "uid://c01o0ym06dtld"
+
+[node name="ComputerControlledPlayer" type="Node" parent="."]
+script = ExtResource("7_vyht1")
+color = Color(0.7417444, 0.37672782, 0, 1)
+player_name = "Christopher"
+metadata/_custom_type_script = "uid://oqyy78na53sy"

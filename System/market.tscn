@@ -1,0 +1,133 @@
+[gd_scene load_steps=7 format=3 uid="uid://qpmd3ow1ks0n"]
+
+[ext_resource type="Script" uid="uid://q5wkw6r8gpf5" path="res://System/market.gd" id="1_n5ih4"]
+[ext_resource type="PackedScene" uid="uid://xmubnv8ncspd" path="res://System/market_icon.tscn" id="1_qy6h4"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_xtoqr"]
+viewport_path = NodePath("FactoryIcon")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_qy6h4"]
+viewport_path = NodePath("TankIcon")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_n5ih4"]
+viewport_path = NodePath("BattleShipIcon")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_qd2tk"]
+viewport_path = NodePath("FactoryIcon")
+
+[node name="Market" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_n5ih4")
+
+[node name="FactoryIcon" parent="." instance=ExtResource("1_qy6h4")]
+node_path = "res://Objects/factory.glb"
+
+[node name="TankIcon" parent="." instance=ExtResource("1_qy6h4")]
+node_path = "res://Objects/tank.glb"
+
+[node name="BattleShipIcon" parent="." instance=ExtResource("1_qy6h4")]
+node_path = "res://Objects/battle_ship.glb"
+
+[node name="Panel" type="Panel" parent="."]
+custom_minimum_size = Vector2(750, 500)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -375.0
+offset_top = -250.0
+offset_right = 375.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Market"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+horizontal_scroll_mode = 2
+vertical_scroll_mode = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="FactoryButton" type="Button" parent="Panel/VBoxContainer/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+text = "Factory
+"
+icon = SubResource("ViewportTexture_xtoqr")
+
+[node name="TankButton" type="Button" parent="Panel/VBoxContainer/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+text = "Tank"
+icon = SubResource("ViewportTexture_qy6h4")
+
+[node name="BattleShipButton" type="Button" parent="Panel/VBoxContainer/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+text = "Battle Ship"
+icon = SubResource("ViewportTexture_n5ih4")
+
+[node name="SelectedObject" type="HBoxContainer" parent="Panel/VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Panel/VBoxContainer/SelectedObject"]
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+texture = SubResource("ViewportTexture_qd2tk")
+
+[node name="DescriptionContainer" type="VBoxContainer" parent="Panel/VBoxContainer/SelectedObject"]
+layout_mode = 2
+
+[node name="TypeLabel" type="Label" parent="Panel/VBoxContainer/SelectedObject/DescriptionContainer"]
+layout_mode = 2
+text = "Object Type: Factory"
+
+[node name="CostLabel" type="Label" parent="Panel/VBoxContainer/SelectedObject/DescriptionContainer"]
+layout_mode = 2
+text = "Cost: 50"
+
+[node name="DescriptionLabel" type="Label" parent="Panel/VBoxContainer/SelectedObject/DescriptionContainer"]
+layout_mode = 2
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="Panel/VBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="BuyButton" type="Button" parent="Panel/VBoxContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Buy
+"
+
+[node name="ClearButton" type="Button" parent="Panel/VBoxContainer/ButtonsContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_vertical = 4
+text = "Clear"
+
+[node name="CloseButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Close"

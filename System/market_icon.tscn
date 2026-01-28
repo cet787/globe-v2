@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://xmubnv8ncspd"]
+
+[ext_resource type="Script" uid="uid://ds06ec3ktuqf5" path="res://System/market_icon.gd" id="1_kp0ll"]
+
+[sub_resource type="Environment" id="Environment_xkp7b"]
+background_mode = 1
+background_color = Color(0.28118682, 0.28118688, 0.28118682, 1)
+
+[node name="MarketIcon" type="SubViewport"]
+own_world_3d = true
+size = Vector2i(128, 128)
+script = ExtResource("1_kp0ll")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, 0.05)
+environment = SubResource("Environment_xkp7b")
+near = 0.01
+far = 1.0
+
+[node name="Light" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.033563748, 0.02161926, 0.015272342)

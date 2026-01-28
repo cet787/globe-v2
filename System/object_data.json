@@ -1,0 +1,21 @@
+{
+	"Factory": {
+		"name": "Factory",
+		"type": "factory",
+		"cost": 3,
+		"description": ""
+	},
+	"BattleShip": {
+		"name": "BattleShip",
+		"type": "ship",
+		"cost": 10,
+		"description": ""
+	},
+	"Tank": {
+		"name": "Tank",
+		"type": "tank",
+		"cost": 6,
+		"description": ""
+	}
+	
+}

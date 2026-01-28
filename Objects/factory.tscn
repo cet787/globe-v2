@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3 uid="uid://srh7va01eo3"]
+
+[ext_resource type="PackedScene" uid="uid://b7xa7f1tecg0s" path="res://Objects/factory.glb" id="1_hpi80"]
+[ext_resource type="Script" uid="uid://bi7qspdt4ujx3" path="res://Objects/factory.gd" id="2_jh2io"]
+[ext_resource type="Shader" uid="uid://7vx06cabw1u0" path="res://Objects/tank.gdshader" id="3_jh2io"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_330d7"]
+render_priority = 0
+shader = ExtResource("3_jh2io")
+shader_parameter/highlight_strength = 0.0
+shader_parameter/select_highlight_strength = 0.0
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_jh2io"]
+points = PackedVector3Array(-7.094986, 0, -5.3212395, -7.094986, 0, 5.3212404, -7.094986, 1.4129045, -5.3212395, 7.094986, 0, -5.3212395, -7.094986, 1.4129045, 5.3212404, 7.094986, 0, 5.3212404, 2.7974358, 3.413155, -0.0010414124, 2.9946728, 3.413155, -0.47920275, 3.4724865, 3.413155, -0.677135, 7.094986, 1.4129045, -5.3212395, 2.9946728, 3.413155, 0.47711992, 7.094986, 1.4129045, 5.3212404, 3.4724865, 3.413155, 0.6750517, 3.9516897, 3.413155, -0.47920275, 4.1489277, 3.413155, -0.0010414124, 3.9516897, 3.413155, 0.47711992)
+
+[node name="factory" instance=ExtResource("1_hpi80")]
+script = ExtResource("2_jh2io")
+
+[node name="Factory" parent="." index="0"]
+material_overlay = SubResource("ShaderMaterial_330d7")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(0.0014094446, 0, 0, 0, 0.0070763584, 0, 0, 0, 0.0014094446, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_jh2io")
+
+[node name="Panel" type="Panel" parent="." index="2"]
+visible = false
+custom_minimum_size = Vector2(50, 50)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -25.0
+offset_top = -25.0
+offset_right = 25.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Panel" index="0"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Production Rate: 8/day
+Demolish Cost: 0"
+
+[node name="DemolishButton" type="Button" parent="Panel" index="1"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
